@@ -65,7 +65,7 @@ If MySQL fails to start or the `db` container exits immediately, see `docs/troub
 
 1. Create a Google Cloud project with an OAuth 2.0 Web application credential.
 2. Set the authorized redirect URI to `http://localhost:8080/auth/google/callback` (update this for deployed environments).
-3. Copy the client ID and secret into `backend/.env` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) and, if desired, `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`).
+3. Copy the client ID and secret into `backend/.env` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) and, if desired, `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`). If you add multiple scopes, wrap them in quotes (for example `GOOGLE_SCOPES="openid email profile"`).
 4. Restart the Docker stack so the containers pick up the new environment variables.
 5. Visit the frontend, click **Sign in with Google**, and the API will persist the user record in the `users` table (created on first login).
 
