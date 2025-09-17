@@ -74,6 +74,10 @@ If MySQL fails to start or the `db` container exits immediately, see `docs/troub
 - Entry point: backend/public/index.php
 - Routes registered in backend/src/Routes/ApiRoutes.php
 - Sample health endpoint: GET /health
+- Journals API powers the values workflow:
+  - GET /journals lists available journals
+  - GET /journals/{slug} retrieves prompts plus the signed-in user's saved responses
+  - PUT /journals/{slug}/responses saves responses, active step, and todo/skipped state for the authenticated session
 
 ## Frontend Notes
 

@@ -53,6 +53,12 @@ export const api = {
       method: 'POST',
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
+  put: <T extends JsonValue>(path: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(path, {
+      ...options,
+      method: 'PUT',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    }),
 };
 
 export type ApiUser = {
@@ -64,4 +70,48 @@ export type ApiUser = {
 
 export type MeResponse = {
   user: ApiUser | null;
+};
+
+export type JournalPrompt = {
+  id: number;
+  key: string;
+  title: string;
+  question: string;
+  guidance: string;
+  placeholder: string;
+  examples: string[];
+  optional: boolean;
+  position: number;
+};
+
+export type JournalSummary = {
+  id: number;
+  slug: string;
+  title: string;
+  description: string | null;
+};
+
+export type JournalDetailResponse = {
+  journal: JournalSummary & {
+    prompts: JournalPrompt[];
+  };
+  userState: JournalState | null;
+  responses: Record<string, string>;
+};
+
+export type JournalState = {
+  activeStep: number;
+  todo: boolean;
+  skippedAt: string | null;
+  lastUpdated: string | null;
+};
+
+export type SaveJournalResponse = {
+  state: {
+    activeStep: number;
+    todo: boolean;
+    skippedAt: string | null;
+    lastUpdated: string;
+  };
+  responses: Record<string, string>;
 };

@@ -30,7 +30,7 @@ return [
         ],
         'cors' => [
             'allowed_origins' => array_values(array_filter(array_map('trim', explode(',', $env['CORS_ALLOWED_ORIGINS'] ?? ($env['FRONTEND_APP_URL'] ?? 'http://localhost:5173'))))),
-            'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
+            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
             'allowed_headers' => ['Content-Type', 'Authorization'],
             'allow_credentials' => true,
         ],

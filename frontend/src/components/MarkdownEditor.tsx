@@ -83,6 +83,7 @@ export interface MarkdownEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   label?: string;
+  readOnly?: boolean;
 }
 
 export function MarkdownEditor({
@@ -91,6 +92,7 @@ export function MarkdownEditor({
   onChange,
   placeholder,
   label,
+  readOnly = false,
 }: MarkdownEditorProps) {
   const [showPreview, setShowPreview] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -139,6 +141,7 @@ export function MarkdownEditor({
               className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-100"
               onClick={() => handleFormatting(token)}
               title={token.description}
+              disabled={readOnly}
             >
               {token.label}
             </button>
@@ -160,6 +163,7 @@ export function MarkdownEditor({
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value)}
           className="h-48 w-full resize-y border-0 bg-transparent px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
+          readOnly={readOnly}
         />
         {showPreview ? (
           <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700">
@@ -174,7 +178,11 @@ export function MarkdownEditor({
           </div>
         ) : null}
       </div>
-      <p className="text-xs text-slate-500">Autosaves as you type. Use Markdown for quick formatting.</p>
+      <p className="text-xs text-slate-500">
+        {readOnly
+          ? 'Sign in to edit and save your reflections.'
+          : 'Autosaves as you type. Use Markdown for quick formatting.'}
+      </p>
     </div>
   );
 }

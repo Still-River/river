@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Bootstrap;
 
 use App\Controllers\AuthController;
+use App\Controllers\JournalController;
 use App\Middleware\CorsMiddleware;
 use App\Middleware\SessionMiddleware;
 use App\Routes\ApiRoutes;
 use App\Support\GoogleOAuthService;
+use App\Support\JournalRepository;
 use App\Support\SessionManager;
 use App\Support\UserRepository;
 use DI\Container;
@@ -119,6 +121,10 @@ class AppFactory
             return new UserRepository($c->get(PDO::class));
         });
 
+        $container->set(JournalRepository::class, static function (Container $c): JournalRepository {
+            return new JournalRepository($c->get(PDO::class));
+        });
+
         $container->set(GoogleOAuthService::class, static function (Container $c): GoogleOAuthService {
             /** @var array<string, mixed> $settings */
             $settings = $c->get('settings');
@@ -145,6 +151,13 @@ class AppFactory
                 $c->get(UserRepository::class),
                 $c->get(SessionManager::class),
                 $settings['frontend_app_url']
+            );
+        });
+
+        $container->set(JournalController::class, static function (Container $c): JournalController {
+            return new JournalController(
+                $c->get(JournalRepository::class),
+                $c->get(SessionManager::class)
             );
         });
     }

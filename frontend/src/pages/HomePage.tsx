@@ -1,33 +1,42 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { loadValuesJournalState, VALUES_JOURNAL_STORAGE_KEY } from '../utils/valuesJournalStorage';
+import { api } from '../utils/api';
+import type { JournalDetailResponse } from '../utils/api';
+
+const VALUES_JOURNAL_SLUG = 'values-journal';
 
 export function HomePage() {
   const { user } = useAuth();
   const [hasValuesJournalTodo, setHasValuesJournalTodo] = useState(false);
 
   useEffect(() => {
-    const updateFromStorage = () => {
-      const state = loadValuesJournalState();
-      setHasValuesJournalTodo(state.todo);
-    };
-
-    updateFromStorage();
-
-    if (typeof window === 'undefined') {
+    if (!user) {
+      setHasValuesJournalTodo(false);
       return;
     }
 
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === VALUES_JOURNAL_STORAGE_KEY) {
-        updateFromStorage();
+    let cancelled = false;
+
+    const fetchTodo = async () => {
+      try {
+        const data = await api.get<JournalDetailResponse>(`/journals/${VALUES_JOURNAL_SLUG}`);
+        if (!cancelled) {
+          setHasValuesJournalTodo(Boolean(data.userState?.todo));
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setHasValuesJournalTodo(false);
+        }
       }
     };
 
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+    void fetchTodo();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   return (
     <section className="space-y-6">
