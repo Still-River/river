@@ -1,0 +1,68 @@
+services:
+  api:
+    build:
+      context: ./backend
+    command: sh -c "composer install --no-interaction --prefer-dist && php -S 0.0.0.0:8080 -t public public/index.php"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: 'true'
+      APP_URL: http://localhost:8080
+      DB_HOST: db
+      DB_PORT: '3306'
+      DB_DATABASE: river
+      DB_USERNAME: river
+      DB_PASSWORD: river_pass
+    volumes:
+      - ./backend:/var/www/html
+      - api_vendor:/var/www/html/vendor
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - river
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080
+    depends_on:
+      - api
+    networks:
+      - river
+
+  db:
+    image: mysql:8.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: river
+      MYSQL_USER: river
+      MYSQL_PASSWORD: river_pass
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - river
+
+volumes:
+  api_vendor:
+  frontend_node_modules:
+  db_data:
+
+networks:
+  river:
+    driver: bridge
