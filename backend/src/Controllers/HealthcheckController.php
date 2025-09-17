@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use DateTimeImmutable;
@@ -8,17 +10,17 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class HealthcheckController
 {
-    public function status(Request , Response ): Response
+    public function status(Request $request, Response $response): Response
     {
-         = [
+        $payload = [
             'service' => 'river-api',
             'status' => 'ok',
             'timestamp' => (new DateTimeImmutable())->format(DATE_ATOM),
         ];
 
-        ->getBody()->write((string) json_encode(, JSON_THROW_ON_ERROR));
+        $response->getBody()->write((string) json_encode($payload, JSON_THROW_ON_ERROR));
 
-        return 
+        return $response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus(200);
     }

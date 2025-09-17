@@ -7,18 +7,32 @@ services:
       APP_ENV: local
       APP_DEBUG: 'true'
       APP_URL: http://localhost:8080
+      FRONTEND_APP_URL: http://localhost:5173
       DB_HOST: db
       DB_PORT: '3306'
       DB_DATABASE: river
       DB_USERNAME: river
       DB_PASSWORD: river_pass
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID:-}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET:-}"
+      GOOGLE_REDIRECT_URI: http://localhost:8080/auth/google/callback
+      GOOGLE_SCOPES: openid email profile
+      GOOGLE_PROMPT: consent
+      GOOGLE_ACCESS_TYPE: offline
+      CORS_ALLOWED_ORIGINS: http://localhost:5173
+      SESSION_NAME: river_session
+      SESSION_LIFETIME: '1209600'
+      SESSION_DOMAIN: ''
+      SESSION_SECURE: 'false'
+      SESSION_SAME_SITE: Lax
     volumes:
       - ./backend:/var/www/html
       - api_vendor:/var/www/html/vendor
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - river
 
@@ -33,8 +47,10 @@ services:
       - "5173:5173"
     environment:
       VITE_API_URL: http://localhost:8080
+      VITE_GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID:-}"
     depends_on:
-      - api
+      api:
+        condition: service_started
     networks:
       - river
 
@@ -50,13 +66,14 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD --silent || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 20
+      start_period: 120s
     networks:
       - river
+
 
 volumes:
   api_vendor:

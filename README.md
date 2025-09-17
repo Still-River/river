@@ -56,8 +56,18 @@ Docker volumes persist composer vendors, node modules, and database data across 
 
 ## Environment Variables
 
-- backend/.env includes APP_ENV, APP_DEBUG, APP_URL, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD
-- Frontend relies on VITE_API_URL (set inside docker-compose.yml)
+- backend/.env now includes the existing application settings (APP_ENV, APP_DEBUG, APP_URL, DB_*) plus the Google OAuth and session keys: FRONTEND_APP_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, GOOGLE_SCOPES, GOOGLE_PROMPT, GOOGLE_ACCESS_TYPE, CORS_ALLOWED_ORIGINS, SESSION_NAME, SESSION_LIFETIME, SESSION_DOMAIN, SESSION_SECURE, SESSION_SAME_SITE.
+- Frontend relies on VITE_API_URL and VITE_GOOGLE_CLIENT_ID (defined in frontend/.env or docker-compose.yml).
+
+If MySQL fails to start or the `db` container exits immediately, see `docs/troubleshooting-mysql.md` for reset steps.
+
+## Google OAuth Setup
+
+1. Create a Google Cloud project with an OAuth 2.0 Web application credential.
+2. Set the authorized redirect URI to `http://localhost:8080/auth/google/callback` (update this for deployed environments).
+3. Copy the client ID and secret into `backend/.env` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) and, if desired, `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`).
+4. Restart the Docker stack so the containers pick up the new environment variables.
+5. Visit the frontend, click **Sign in with Google**, and the API will persist the user record in the `users` table (created on first login).
 
 ## Backend Notes
 

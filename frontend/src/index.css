@@ -10,3 +10,27 @@ body {
   min-height: 100vh;
   background-color: #f8fafc;
 }
+
+.markdown-preview p {
+  margin: 0;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  padding-left: 1.25rem;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.markdown-preview blockquote {
+  border-left: 3px solid #cbd5f5;
+  padding-left: 0.75rem;
+  color: #475569;
+  margin: 0;
+}
+
+.markdown-preview a {
+  color: #0f172a;
+  text-decoration: underline;
+}
